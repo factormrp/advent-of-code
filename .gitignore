@@ -1,0 +1,11 @@
+*
+!*/
+
+# track this file
+!.gitignore
+
+# whitelist everything in top-level folders
+!*/py
+!*/*.py
+!*/*.html
+!*/*.css
