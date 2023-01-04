@@ -1,16 +1,17 @@
 # System imports
-from typing import Set, List
+from typing import List
+import pdb
 import os
 # Custom imports
 from util.source import Source
 
-final_line = '-1 inf'
+# Define global variables
 filesys = {}
 dirs = {'/'}
 
 
 def _modify_cwd(current: str, target: str) -> str:
-    if target == '/':  # AHHHHHH
+    if target == '/':
         return target
     elif target == '..':
         return os.path.split(current)[0]
@@ -34,14 +35,15 @@ def _handle_cmd(line: str, current_dir: str) -> str:
 
     if line[:2] == 'ls':
         files_w_meta = [i.strip() for i in line[3:].split('\n') if i != '']
-        files_as_absolutes = _set_absolutes(files_w_meta, current_dir)
+        _set_absolutes(files_w_meta, current_dir)
 
     return current_dir
+
 
 def _calc_size(directory: str) -> int:
     total_size = 0
     for file, size in filesys.items():
-        if os.path.split(file)[0] == directory:
+        if directory in os.path.split(file)[0]:
             total_size += size
     return total_size
 
@@ -50,26 +52,20 @@ def _calc_size_of_dirs_of_interest() -> int:
     total_size = 0
     for dir in dirs:
         size = _calc_size(dir)
-        if size < 100000:
+        if size <= 100000:
             total_size += size
     return total_size
 
 
 def main1(source: Source) -> int:
-    try:
-        cwd = '/'
-        cmd_lines = [i.strip() for i in source.data.split('$') if i != '']
-        #cmd_lines = [
-        #    'ls\n205200 hnbqlmmg\n80316 lmw.zmd\ndir mwj\n122312 tsrwvqbg.tzh',
-        #    'cd mwj',
-        #    'ls\n99000 test.txt'
-        #]
-        for line in cmd_lines:
-            cwd = _handle_cmd(line, cwd)
+    cwd = '/'
+    cmd_lines = [i.strip() for i in source.data.split('$') if i != '']
+    #cmd_lines = ['cd /', 'ls\ndir a', 'cd a', 'ls\ndir a\n2 a.txt', 'cd a', 'ls\n99999 a.txt']
+    #cmd_lines = ['cd /', 'ls\ndir a\n14848514 b.txt\n8504156 c.dat\ndir d', 'cd a', 'ls\ndir e\n29116 f\n2557 g\n62596 h.lst', 'cd e', 'ls\n584 i', 'cd ..', 'cd ..', 'cd d', 'ls\n4060174 j\n8033020 d.log\n5626152 d.ext\n7214296 k']
+    for line in cmd_lines:
+        cwd = _handle_cmd(line, cwd)
 
-        return _calc_size_of_dirs_of_interest()
-    except Exception as e:
-        raise(e)
+    return _calc_size_of_dirs_of_interest()
 
 def main2(source: Source) -> int:
     pass
