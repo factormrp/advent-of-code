@@ -1,81 +1,75 @@
-from typing import List, Dict, Tuple, Union
+# System imports
+from typing import Set, List
+import os
+# Custom imports
 from util.source import Source
-import pdb
+
+final_line = '-1 inf'
+filesys = {}
+dirs = {'/'}
 
 
-class Folder:
-    def __init__(
-        self,
-        parent,
-        children: List,
-        directory_name: str
-    ) -> None:
-        self.parent = parent
-        self.children = children
-        self.absolute_name = f'{parent.absolute_name}/{directory_name}' \
-            if parent is not None else directory_name
-        self.relative_name = directory_name
-
-    def add_child(self, child) -> None:
-        self.children.append(child)
-
-    def get_child(self, name):
-        for child in [c for c in self.children if type(c)==self.__class__]:
-            if child.relative_name == name:
-                return child
-        return None
-
-    def __eq__(self, other) -> bool:
-        try:
-            return True if self.relative_name == other.relative_name else False
-        except AttributeError:
-            return True if self.relative_name == other else False
-
-    def __repr__(self) -> str:
-        return self.relative_name
+def _modify_cwd(current: str, target: str) -> str:
+    if target == '/':  # AHHHHHH
+        return target
+    elif target == '..':
+        return os.path.split(current)[0]
+    else:
+        return os.path.join(current, target)
 
 
-def _handle_cd(arguments: str) -> str:
-    return arguments.replace('\n', '').strip()
+def _set_absolutes(file_list: List[str], directory: str) -> None:
+    for file in file_list:
+        meta, name = file.split(' ')
+        if meta.isnumeric():
+            filesys[os.path.join(directory, name)] = int(meta)
+        else:
+            dirs.add(os.path.join(directory, name))
 
 
-def _handle_ls(
-    arguments: str, filesystem: Dict, current_dir: str
-) -> Tuple[Dict, str]:
-    pass
-
-
-def _handle_cmd(
-    line: str, filesystem: Folder, current_dir: str
-) -> Tuple[Folder, str]:
-    # DEBUG
-    pdb.set_trace()
+def _handle_cmd(line: str, current_dir: str) -> str:
     if line[:2] == 'cd':
-        target_dir = _handle_cd(line[2:])
-        if target_dir == '/':  # AHHHHHH
-            current_dir = target_dir
-        elif target_dir == '..':
-            filesystem = filesystem.parent
-            current_dir = filesystem.relative_name
-        elif target_dir not in filesystem.children:
-            filesystem.add_child(Folder(filesystem, [], target_dir))
-            filesystem = filesystem.children
-        current_dir = target_dir
+        target_dir = line[2:].replace('\n', '').strip()
+        current_dir = _modify_cwd(current_dir, target_dir)
 
     if line[:2] == 'ls':
-        files_found = [i.strip() for i in line[3:].split('\n') if i != '']
-    return filesystem, current_dir
+        files_w_meta = [i.strip() for i in line[3:].split('\n') if i != '']
+        files_as_absolutes = _set_absolutes(files_w_meta, current_dir)
+
+    return current_dir
+
+def _calc_size(directory: str) -> int:
+    total_size = 0
+    for file, size in filesys.items():
+        if os.path.split(file)[0] == directory:
+            total_size += size
+    return total_size
+
+
+def _calc_size_of_dirs_of_interest() -> int:
+    total_size = 0
+    for dir in dirs:
+        size = _calc_size(dir)
+        if size < 100000:
+            total_size += size
+    return total_size
 
 
 def main1(source: Source) -> int:
-    cwd = '/'
-    filesys = Folder(None, [], cwd)
-    # lines = [i.strip() for i in source.data.split('$') if i != '']
-    lines = ['ls\n205200 hnbqlmmg\n80316 lmw.zmd\ndir mwj\n122312 tsrwvqbg.tzh']
-    for line in lines:
-        filesys, cwd = _handle_cmd(line, filesys, cwd)
-    return 1
+    try:
+        cwd = '/'
+        cmd_lines = [i.strip() for i in source.data.split('$') if i != '']
+        #cmd_lines = [
+        #    'ls\n205200 hnbqlmmg\n80316 lmw.zmd\ndir mwj\n122312 tsrwvqbg.tzh',
+        #    'cd mwj',
+        #    'ls\n99000 test.txt'
+        #]
+        for line in cmd_lines:
+            cwd = _handle_cmd(line, cwd)
 
+        return _calc_size_of_dirs_of_interest()
+    except Exception as e:
+        raise(e)
 
 def main2(source: Source) -> int:
     pass
