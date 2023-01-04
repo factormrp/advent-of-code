@@ -7,5 +7,6 @@
 # whitelist everything in top-level folders
 !*/.py
 !*/*.py
+!*/*/*.py
 !*/*.html
 !*/*.css
