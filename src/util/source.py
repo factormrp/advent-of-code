@@ -1,5 +1,3 @@
-import os
-
 from dotenv import load_dotenv, find_dotenv
 from typing import Dict, List
 from os import getenv
@@ -9,7 +7,8 @@ import requests
 # Load in environment variables
 load_dotenv(find_dotenv())
 SESSION_COOKIE = getenv("SESSION_COOKIE")
-
+ERROR_MSG = 'Puzzle inputs differ by user.  Please log in to get your puzzle ' \
+            'input.'
 
 class Source:
 
@@ -27,12 +26,17 @@ class Source:
             self.cookies = cookies
 
     @property
-    def data(self) -> str:
-        return self._clean_data()
-
-    @property
     def lines(self) -> List[str]:
         return self._clean_data().split("\n")
+
+    def data(self, clean: bool = True) -> str:
+        if clean:
+            ret = self._clean_data()
+        else:
+            ret = self._fetch_data()
+        if ret != ERROR_MSG:
+            return ret
+        raise EnvironmentError('Check your session cookie')
 
     def _fetch_data(self) -> str:
         with requests.get(self.url, cookies=self.cookies) as res:

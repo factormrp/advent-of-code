@@ -1,6 +1,5 @@
 # System imports
 from typing import List
-import pdb
 import os
 # Custom imports
 from util.source import Source
@@ -8,6 +7,8 @@ from util.source import Source
 # Define global variables
 filesys = {}
 dirs = {'/'}
+SP_D = 70000000
+SP_NEED = 30000000
 
 
 def _modify_cwd(current: str, target: str) -> str:
@@ -43,7 +44,7 @@ def _handle_cmd(line: str, current_dir: str) -> str:
 def _calc_size(directory: str) -> int:
     total_size = 0
     for file, size in filesys.items():
-        if directory in os.path.split(file)[0]:
+        if os.path.split(file)[0][:len(directory)] == directory:
             total_size += size
     return total_size
 
@@ -57,15 +58,28 @@ def _calc_size_of_dirs_of_interest() -> int:
     return total_size
 
 
+def _calc_size_of_dir_to_delete() -> int:
+    dir_sizes = [
+        _calc_size(d) for d in dirs
+        if _calc_size(d) >= SP_NEED - (SP_D - _calc_size('/'))
+    ]
+    return min(dir_sizes)
+
+
 def main1(source: Source) -> int:
     cwd = '/'
-    cmd_lines = [i.strip() for i in source.data.split('$') if i != '']
-    #cmd_lines = ['cd /', 'ls\ndir a', 'cd a', 'ls\ndir a\n2 a.txt', 'cd a', 'ls\n99999 a.txt']
-    #cmd_lines = ['cd /', 'ls\ndir a\n14848514 b.txt\n8504156 c.dat\ndir d', 'cd a', 'ls\ndir e\n29116 f\n2557 g\n62596 h.lst', 'cd e', 'ls\n584 i', 'cd ..', 'cd ..', 'cd d', 'ls\n4060174 j\n8033020 d.log\n5626152 d.ext\n7214296 k']
+    cmd_lines = [i.strip() for i in source.data().split('$') if i != '']
     for line in cmd_lines:
         cwd = _handle_cmd(line, cwd)
 
     return _calc_size_of_dirs_of_interest()
 
+
 def main2(source: Source) -> int:
-    pass
+    cwd = '/'
+    cmd_lines = [i.strip() for i in source.data().split('$') if i != '']
+    for line in cmd_lines:
+        cwd = _handle_cmd(line, cwd)
+
+    return _calc_size_of_dir_to_delete()
+

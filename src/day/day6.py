@@ -12,8 +12,8 @@ def _find_start_of_message(line: str, seek: int) -> int:
 
 
 def main1(source: Source) -> int:
-    return _find_start_of_message(source.data, WINDOW_SIZE)
+    return _find_start_of_message(source.data(), WINDOW_SIZE)
 
 
 def main2(source: Source) -> int:
-    return _find_start_of_message(source.data, MESSAGE_LENGTH)
+    return _find_start_of_message(source.data(), MESSAGE_LENGTH)

@@ -4,12 +4,18 @@ from typing import Callable
 import importlib as imp
 import datetime as dt
 import logging as log
-import pdb
 import sys
 import os
 
+# Parse commandline arguments
+args = parse_args(sys.argv[1:])
+
 # Define today
-today = dt.datetime.today()
+if args.manual:
+    today = dt.datetime.fromisoformat(args.manual)
+else:
+    today = dt.datetime.today()
+
 
 # Configure logger
 logger = log.getLogger(__name__)
@@ -38,23 +44,21 @@ def get_mod(tip: int) -> Callable[[Source], int]:
     return mod
 
 
-if __name__ == "__main__":
-    logger.info("=== Advent of Code ===")
+if __name__ == '__main__':
+    logger.info('=== Advent of Code ===')
     try:
-        logger.info("Parse commandline arguments...")
-        args = parse_args(sys.argv[1:])
-
-        if args.manual:
-            today = dt.datetime.fromisoformat(args.manual)
-
-        logger.info("Pull data from today and get lines...")
+        logger.info('Pull data from today and get lines...')
         source = Source(today)
 
-        logger.info(f"Call implementation {args.question}...")
+        logger.info(f'Call implementation {args.question}...')
         main = get_mod(args.question)
         result = main(source)
 
-        print(f"Result: {result}")
+        print(f'Result: {result}')
 
-    except ValueError:
-        logger.info("Something went wrong?")
+    except ValueError as e:
+        logger.error('Something went wrong?')
+        logger.error(e)
+    except EnvironmentError as e:
+        logger.error('Something went wrong?')
+        logger.error(e)
