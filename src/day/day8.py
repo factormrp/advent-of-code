@@ -1,13 +1,4 @@
-# System imports
-from collections import namedtuple
-from logging import getLogger
-import os
-# Custom imports
-from util.source import Source
-
-
-# get logger
-logger = getLogger(__name__)
+from models.source import Source
 
 
 def _get_grids(source: Source) -> tuple[list[list[int]], list[list[int]]]:

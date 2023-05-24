@@ -1,5 +1,6 @@
-from util.source import Source
+from models.source import Source
 
+# Define global vars
 WINDOW_SIZE = 4
 MESSAGE_LENGTH = 14
 

@@ -5,8 +5,6 @@
 !.gitignore
 
 # whitelist everything in top-level folders
-!*/.py
-!*/*.py
-!*/*/*.py
-!*/*.html
-!*/*.css
+!**.py
+!**.html
+!**.css

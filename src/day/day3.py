@@ -1,7 +1,8 @@
-from util.source import Source
-from typing import List
 import itertools as it
+from models.source import Source
+from typing import List
 
+# Define global vars
 HOW_MANY = 2
 
 
@@ -51,9 +52,6 @@ def main1(source: Source) -> int:
 
 
 def main2(source: Source) -> int:
-    # import pdb
-    # pdb.set_trace()
-
     priorities, items = [], []
     bucket = []
     for i, line in enumerate(source.lines, 1):

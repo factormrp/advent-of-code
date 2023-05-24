@@ -1,5 +1,5 @@
-from util.source import Source
 from typing import List
+from models.source import Source
 
 
 def _get_pairs(line: str) -> List[int]:

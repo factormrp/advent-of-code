@@ -10,6 +10,7 @@ SESSION_COOKIE = getenv("SESSION_COOKIE")
 ERROR_MSG = 'Puzzle inputs differ by user.  Please log in to get your puzzle ' \
             'input.'
 
+
 class Source:
 
     def __init__(self, date: datetime.datetime, cookies: Dict = None) -> None:
@@ -27,7 +28,10 @@ class Source:
 
     @property
     def lines(self) -> List[str]:
-        return self._clean_data().split("\n")
+        ret = self._clean_data().split("\n")
+        if ret[0] != ERROR_MSG:
+            return ret
+        raise EnvironmentError('Check your session cookie')
 
     def data(self, clean: bool = True) -> str:
         if clean:

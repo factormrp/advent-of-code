@@ -1,6 +1,7 @@
-from util.source import Source
 from typing import List, Tuple
+from models.source import Source
 
+# Define global vars
 CRATE_SIZE = 4
 
 

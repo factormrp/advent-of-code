@@ -1,10 +1,8 @@
-# System imports
-from typing import List
 import os
-# Custom imports
-from util.source import Source
+from typing import List
+from models.source import Source
 
-# Define global variables
+# Define global vars
 filesys = {}
 dirs = {'/'}
 SP_D = 70000000
